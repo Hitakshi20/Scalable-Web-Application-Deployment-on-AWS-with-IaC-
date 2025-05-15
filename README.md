@@ -38,9 +38,8 @@ cloud-infra-webapp-deployment/
 │   ├── list_instances.py
 │   └── invoke_lambda.py
 │
-├── architecture-diagram/     # Architecture diagram image
-│   └── arhitecture diagram.jpeg
-│
+├── Arhitecture Diagram.jpg  # Architecture diagram image
+│   
 ├── README.md                  # Project documentation and setup instructions
 ```
 
