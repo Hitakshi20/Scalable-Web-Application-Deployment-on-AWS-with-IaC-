@@ -24,21 +24,24 @@ cloud-infra-webapp-deployment/
 │
 ├── terraform/                  # Terraform scripts for VPC, subnets, ALB, EC2 autoscaling
 │   └── main.tf
+│   └── variables.tf
+│   └── outputs.tf
 │
 ├── cloudformation/            # CloudFormation YAML templates for EC2, RDS, Lambda
-│   └── webapp_stack.yaml
+│   └── ec2-stack.yaml
+│   └── lambda-stack.yaml
+│   └── rds-stack.yaml
 │
 ├── boto3-scripts/             # Python files to interact with EC2, S3, Lambda
-│   ├── create_s3_upload.py
-│   ├── ec2_metadata.py
+│   ├── create_s3.py
+│   ├── ec2.py
 │   ├── list_instances.py
 │   └── invoke_lambda.py
 │
 ├── architecture-diagram/     # Architecture diagram image
-│   └── final-diagram.png
+│   └── arhitecture diagram.jpeg
 │
 ├── README.md                  # Project documentation and setup instructions
-└── .gitignore
 ```
 
 ---
@@ -73,15 +76,6 @@ aws s3 cp test-file.txt s3://your-bucket-name/
 ```bash
 aws lambda invoke --function-name S3UploadLogger --payload '{}' response.json
 ```
-
----
-
-## 🔍 Python Scripts (Boto3)
-
-- `create_s3_upload.py`: Creates an S3 bucket and uploads a file
-- `ec2_metadata.py`: Retrieves metadata of the running EC2 instance
-- `list_instances.py`: Lists all running EC2 instances
-- `invoke_lambda.py`: Invokes the logging Lambda function manually
 
 ---
 
