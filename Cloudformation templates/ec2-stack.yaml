@@ -1,0 +1,94 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: EC2 Instances behind ALB with Auto Scaling
+
+Parameters:
+  PublicSubnet1:
+    Type: String
+  PublicSubnet2:
+    Type: String
+  SecurityGroupId:
+    Type: String
+  InstanceAMI:
+    Type: String
+    Default: ami-0e58b56aa4d64231b
+  InstanceType:
+    Type: String
+    Default: t2.micro
+
+Resources:
+  LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateData:
+        InstanceType: !Ref InstanceType
+        ImageId: !Ref InstanceAMI
+        SecurityGroupIds:
+          - !Ref SecurityGroupId
+        UserData:
+          Fn::Base64: |
+            #!/bin/bash
+            yum install -y httpd php-mysqlnd mysql
+            systemctl enable httpd
+            systemctl start httpd
+            cat <<EOF > /var/www/html/index.php
+            <?php
+            \$conn = new mysqli("${myrdsstack-mydbinstance-ojf1pz8feqpr.c4lcu66wyyxu.us-east-1.rds.amazonaws.com}", "admin", "hitakshi2025", "myappdb");
+            if (\$conn->connect_error) {
+                die("Connection failed: " . \$conn->connect_error);
+            }
+            echo "<h1>Connected to RDS successfully!</h1>";
+            \$conn->close();
+            ?>
+            EOF
+
+  ALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Subnets:
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+      SecurityGroups:
+        - !Ref SecurityGroupId
+      Scheme: internet-facing
+      Type: application
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      VpcId: vpc-04e4a984a24f61459
+      Port: 80
+      Protocol: HTTP
+      TargetType: instance
+      HealthCheckPath: /
+
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+      LoadBalancerArn: !Ref ALB
+      Port: 80
+      Protocol: HTTP
+
+  AutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      VPCZoneIdentifier:
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+      LaunchTemplate:
+        LaunchTemplateId: !Ref LaunchTemplate
+        Version: !GetAtt LaunchTemplate.LatestVersionNumber
+      MinSize: 1
+      MaxSize: 3
+      DesiredCapacity: 2
+      TargetGroupARNs:
+        - !Ref TargetGroup
+Metadata:
+  AWS::CloudFormation::Init:
+    config:
+      files:
+        /var/log/user-data.log:
+          content: |
+            UserData executed.
