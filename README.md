@@ -1,5 +1,4 @@
 # AWS-Course-Project
-# Cloud Infrastructure for Web App Deployment
 
 This repository contains the complete infrastructure setup and automation for deploying a scalable, resilient web application on AWS using Terraform, AWS CloudFormation, and Python Boto3 scripts.
 
