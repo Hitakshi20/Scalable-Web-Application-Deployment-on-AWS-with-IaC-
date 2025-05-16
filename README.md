@@ -53,6 +53,32 @@ A high-level architecture showing:
 - IAM Roles and Security Groups
 
 ---
+## 🔍 How It Works
+
+1. Terraform provisions a VPC, subnets, route tables, and security groups.
+2. CloudFormation deploys an EC2 instance (PHP web app) and RDS DB.
+3. Files uploaded to S3 trigger Lambda, which logs metadata to CloudWatch.
+4. Python scripts list EC2 instances, retrieve metadata, and manually invoke Lambda.
+
+---
+## 🧪 Testing the Setup
+
+- Access your EC2 app via public IP.
+- Upload a file to the S3 bucket.
+- View logs in CloudWatch.
+- Run `invoke_lambda.py` and observe results.
+
+---
+## ⚙️ Technologies Used
+
+- AWS EC2, RDS, S3, Lambda, CloudWatch, IAM
+- Terraform
+- AWS CloudFormation
+- Boto3 (Python SDK for AWS)
+- AWS CLI
+- GitHub
+
+---
 
 ## 🛠️ Setup Instructions
 
@@ -85,31 +111,4 @@ aws s3 cp test-file.txt s3://myapp-log-bucket-hitakshi/
 aws lambda invoke --function-name S3UploadLogger --payload '{}' response.json
 ```
 
----
-## 🔍 How It Works
-
-1. Terraform provisions a VPC, subnets, route tables, and security groups.
-2. CloudFormation deploys an EC2 instance (PHP web app) and RDS DB.
-3. Files uploaded to S3 trigger Lambda, which logs metadata to CloudWatch.
-4. Python scripts list EC2 instances, retrieve metadata, and manually invoke Lambda.
-
----
-## 🧪 Testing the Setup
-
-- Access your EC2 app via public IP.
-- Upload a file to the S3 bucket.
-- View logs in CloudWatch.
-- Run `invoke_lambda.py` and observe results.
-
----
-## ⚙️ Technologies Used
-
-- AWS EC2, RDS, S3, Lambda, CloudWatch, IAM
-- Terraform
-- AWS CloudFormation
-- Boto3 (Python SDK for AWS)
-- AWS CLI
-- GitHub
-
----
 
